@@ -6,7 +6,7 @@
 - 容量、買 2 件優惠、自己填價錢
 - 消委會冇貨可以再搜 HKTVmall／惠康／Price.com.hk
 
-Demo: [即時試：（https://hk-cart.grok.me）]
+Demo: [即時試](https://hk-cart.grok.me)
 
 開源：[github.com/rayony/HK-Cart](https://github.com/rayony/HK-Cart)
 
