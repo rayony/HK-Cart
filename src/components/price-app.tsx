@@ -1,4 +1,4 @@
-import { Copy, FileSpreadsheet, History, LoaderCircle, Search, Trash2, Upload } from "lucide-react";
+import { Copy, FileSpreadsheet, Github, History, LoaderCircle, Search, Trash2, Upload } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast, Toaster } from "sonner";
 import { CompareBoard } from "@/components/compare-board";
@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "gaakgaai-list-v1";
 const LAST_KEY = "gaakgaai-last-v1";
+const GITHUB_URL = "https://github.com/rayony/HK-Cart";
 
 export function PriceApp() {
   const [text, setText] = useState("");
@@ -361,6 +362,15 @@ export function PriceApp() {
             )}
           </Badge>
           <Badge variant="outline">每日更新</Badge>
+          <a
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex h-8 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-sm text-muted hover:border-ink/20 hover:text-ink"
+          >
+            <Github className="size-3.5" />
+            GitHub
+          </a>
         </div>
       </header>
 
@@ -539,6 +549,15 @@ export function PriceApp() {
         </a>
         開放數據，每日更新，實際以店舖為準。HKTVmall／惠康價錢喺你搜其他來源先即時抽。Price.com.hk 同百佳擋自動抽價，搵到可以自己填返入清單繼續格。
         {meta?.updatedAt ? ` 資料時間：${formatStamp(meta.updatedAt)}。` : null}
+        {" "}開源：
+        <a
+          className="text-muted underline decoration-line underline-offset-2 hover:text-ink"
+          href={GITHUB_URL}
+          target="_blank"
+          rel="noreferrer"
+        >
+          github.com/rayony/HK-Cart
+        </a>
       </footer>
       {copyFallback ? (
         <ManualCopyDialog text={copyFallback} onClose={() => setCopyFallback(null)} />
