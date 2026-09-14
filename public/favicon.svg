@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="8" fill="#1c1814"/>
+  <rect x="5" y="5" width="22" height="22" rx="4" fill="none" stroke="#c4452d" stroke-width="1.5"/>
+  <text x="16" y="22" text-anchor="middle" font-family="Noto Serif TC, Songti TC, serif" font-size="16" font-weight="700" fill="#fbf8f1">平</text>
+</svg>
