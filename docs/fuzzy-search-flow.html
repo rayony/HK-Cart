@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <title>格價籃模糊搜尋流程</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f3efe6;
+        --surface: #fbf8f1;
+        --surface-2: #efe8d9;
+        --ink: #1c1814;
+        --muted: #6d6458;
+        --faint: #9a9186;
+        --line: #ddd4c6;
+        --accent: #c4452d;
+        --good: #2d6a4f;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Noto Sans TC", "PingFang HK", sans-serif;
+      }
+      body {
+        background-image: radial-gradient(circle at 1px 1px, rgba(28, 24, 20, 0.04) 1px, transparent 0);
+        background-size: 22px 22px;
+      }
+      .page {
+        width: 1080px;
+        padding: 48px 56px 56px;
+      }
+      header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 36px;
+      }
+      .kicker {
+        letter-spacing: 0.18em;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--accent);
+      }
+      h1 {
+        font-family: "Noto Serif TC", serif;
+        font-size: 40px;
+        margin: 8px 0 0;
+        letter-spacing: -0.03em;
+      }
+      .sub {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.55;
+        max-width: 38em;
+      }
+      .mark {
+        width: 44px;
+        height: 44px;
+        border: 2px solid var(--accent);
+        color: var(--accent);
+        display: grid;
+        place-items: center;
+        font-family: "Noto Serif TC", serif;
+        font-weight: 700;
+        font-size: 18px;
+      }
+      .col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+      }
+      .arrow {
+        width: 2px;
+        height: 22px;
+        background: var(--accent);
+        position: relative;
+      }
+      .arrow::after {
+        content: "";
+        position: absolute;
+        left: -5px;
+        bottom: -1px;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 8px solid var(--accent);
+      }
+      .arrow-label {
+        font-size: 13px;
+        color: var(--accent);
+        font-weight: 600;
+        margin: 4px 0 2px;
+      }
+      .box, .end, .start {
+        width: 640px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px 20px;
+        box-shadow: 0 1px 0 rgba(28, 24, 20, 0.04), 0 12px 32px rgba(28, 24, 20, 0.05);
+      }
+      .start {
+        background: var(--accent);
+        color: #fffaf4;
+        border-color: transparent;
+        text-align: center;
+      }
+      .start strong { display: block; font-size: 20px; }
+      .start span { display: block; margin-top: 4px; opacity: 0.85; font-size: 14px; }
+      .box h3, .end h3 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 700;
+      }
+      .box p, .end p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .diamond-wrap {
+        height: 132px;
+        display: grid;
+        place-items: center;
+        margin: 6px 0;
+      }
+      .diamond {
+        width: 196px;
+        height: 196px;
+        background: var(--surface);
+        border: 2px solid var(--accent);
+        transform: rotate(45deg);
+        display: grid;
+        place-items: center;
+        box-shadow: 0 12px 32px rgba(28, 24, 20, 0.05);
+      }
+      .diamond span {
+        transform: rotate(-45deg);
+        width: 150px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 1.35;
+      }
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        width: 920px;
+        margin-top: 8px;
+      }
+      .split .lane {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .lane .box, .lane .end {
+        width: 100%;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        padding: 3px 8px;
+        border-radius: 999px;
+        margin-bottom: 8px;
+      }
+      .no { background: #f3ddd6; color: var(--accent); }
+      .yes { background: #dce8e1; color: var(--good); }
+      .four {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        width: 920px;
+      }
+      .four .box { width: 100%; min-height: 118px; }
+      .join {
+        width: 920px;
+        height: 28px;
+        position: relative;
+      }
+      .join::before {
+        content: "";
+        position: absolute;
+        left: 25%;
+        right: 25%;
+        top: 0;
+        height: 2px;
+        background: var(--accent);
+      }
+      .join::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 0;
+        width: 2px;
+        height: 28px;
+        background: var(--accent);
+        transform: translateX(-1px);
+      }
+      .end {
+        background: var(--ink);
+        color: #fffaf4;
+        border-color: transparent;
+        text-align: center;
+        width: 640px;
+      }
+      .end p { color: rgba(255, 250, 244, 0.78); }
+      .step {
+        display: inline-block;
+        color: var(--accent);
+        font-family: "Noto Serif TC", serif;
+        font-size: 12px;
+        margin-right: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div>
+          <div class="kicker">HONG KONG PRICE BASKET</div>
+          <h1>模糊搜尋點樣做</h1>
+          <p class="sub">唔用向量 embedding。對住消委會貨表逐件打分，品名同品類先行，容量只係修飾。手機 GitHub 睇呢張圖即可。</p>
+        </div>
+        <div class="mark">平</div>
+      </header>
+
+      <div class="col">
+        <div class="start">
+          <strong>貼清單：綠茶 600ml</strong>
+          <span>品牌型號、口語關鍵字都得</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box">
+          <h3><span class="step">01</span>normalize</h3>
+          <p>統一單位（600ml → 600毫升）、去標點、去「牌／的／之」。全形數字轉半形。</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box">
+          <h3><span class="step">02</span>拆兩截</h3>
+          <p>品名核心「綠茶」＋容量「600毫升」。容量唔好混入中文字串，否則會同任何 600ml 貨撞字。</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box">
+          <h3><span class="step">03</span>逐件打分 0–100</h3>
+          <p>連續字 > 隔字但順序啱（金象米 ⊂ 金象牌香米）> 品牌開頭 > 類目 > 容量。</p>
+        </div>
+        <div class="arrow"></div>
+
+        <div class="diamond-wrap">
+          <div class="diamond"><span>品名／類目<br />有核心字？</span></div>
+        </div>
+
+        <div class="split">
+          <div class="lane">
+            <div class="arrow-label">冇</div>
+            <div class="arrow"></div>
+            <div class="box">
+              <span class="tag no">濾走</span>
+              <h3>當弱命中</h3>
+              <p>例如花生油 600ml、佳得樂 600ml。容量撞中都唔算綠茶。</p>
+            </div>
+          </div>
+          <div class="lane">
+            <div class="arrow-label">有</div>
+            <div class="arrow"></div>
+            <div class="box">
+              <span class="tag yes">加分</span>
+              <h3>品類閘 TYPE_GROUPS</h3>
+              <p>最長 key 優先：米 ≠ 米粉，油 ≠ 蠔油。錯類 −42。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="join"></div>
+        <div class="box">
+          <h3><span class="step">04</span>排名 top 12</h3>
+          <p>低於門檻唔入榜，再用 hasCoreAffinity 濾走「只有容量、冇品名」嘅貨。</p>
+        </div>
+        <div class="arrow"></div>
+
+        <div class="diamond-wrap">
+          <div class="diamond"><span>清單有冇<br />寫容量？</span></div>
+        </div>
+
+        <div class="four">
+          <div class="box">
+            <span class="tag yes">有 · 家族對到</span>
+            <h3>query-size</h3>
+            <p>跟你寫嘅 330ml／5kg 揀。</p>
+          </div>
+          <div class="box">
+            <span class="tag yes">有 · 家族冇、同類有</span>
+            <h3>widen 到 cat3</h3>
+            <p>全部「綠茶」，唔係全部 600ml。</p>
+          </div>
+          <div class="box">
+            <span class="tag no">有 · 同類都冇呢個 size</span>
+            <h3>alt-size</h3>
+            <p>改顯示 500ml／1.5L 綠茶。</p>
+          </div>
+          <div class="box">
+            <span class="tag yes">冇寫容量</span>
+            <h3>best-unit</h3>
+            <p>每升／每公斤最抵，唔係最平件價。</p>
+          </div>
+        </div>
+
+        <div class="arrow"></div>
+        <div class="end">
+          <h3>自動揀，定等人確認</h3>
+          <p>夠高分同差距 → 自動揀。唔夠、0 命中、或者你撳「改搜尋」→ 確認區再搵 HKTVmall／惠康／Price.com.hk，或者自己填價。</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
